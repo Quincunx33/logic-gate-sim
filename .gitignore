@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Build and deployment output
+.vercel/
+dist/
+build/
+.cache/
+
+# Local app/runtime state
+.grok/preview.log
+.grok/status
+
+# OS/editor files
+.DS_Store
+*.swp
+.vscode/
+.idea/
