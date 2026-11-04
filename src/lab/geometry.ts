@@ -57,9 +57,9 @@ export function pinWorld(comp: CompInst, pinId: string): Pt | null {
   if (!loc) return null;
   const { w, h } = bodySize(comp);
   let x = loc.x - w / 2;
-  let y = loc.y - h / 2;
+  const y = loc.y - h / 2;
   let nx = loc.nx;
-  let ny = loc.ny;
+  const ny = loc.ny;
   if (comp.flip) {
     x = -x;
     nx = -nx;
@@ -106,7 +106,7 @@ export function aabb(comp: CompInst): { x: number; y: number; w: number; h: numb
     [0, h],
   ].map(([px, py]) => {
     let x = px! - w / 2;
-    let y = py! - h / 2;
+    const y = py! - h / 2;
     if (comp.flip) x = -x;
     const s = spin(x, y, comp.rot);
     return { x: comp.x + w / 2 + s.x, y: comp.y + h / 2 + s.y };

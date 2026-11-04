@@ -38,10 +38,6 @@ export interface SimEvent {
   msg: string;
 }
 
-interface DriverRef {
-  c: string;
-  p: string;
-}
 
 export class Simulator {
   circuit: Circuit;

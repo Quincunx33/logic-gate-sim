@@ -116,7 +116,7 @@ export function Waveform({ tall = false }: { tall?: boolean }) {
   })();
 
   return (
-    <div className={"lm-wave" + (tall ? " is-tall" : "")}>
+    <div className={"lm-wave" + (tall ? " is-tall" : "")} suppressHydrationWarning>
       <div className="lm-wave-bar">
         <span>Waveform</span>
         <label>

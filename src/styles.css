@@ -727,28 +727,330 @@
   line-height: 1.5;
 }
 
-@media (max-width: 900px) {
+/* Floating Canvas Controls for touch, tablet, TV & desktop */
+.lm-canvas-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(20, 26, 34, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.lm-canvas-btn {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-fg);
+  border-radius: 6px;
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.lm-canvas-btn.is-label {
+  font-size: 12px;
+  padding: 0 10px;
+  font-family: var(--font-sans);
+}
+.lm-canvas-btn:hover {
+  background: #1e2c3d;
+  border-color: #3d5168;
+}
+.lm-canvas-btn:active {
+  background: #14324f;
+  border-color: #245888;
+}
+
+/* Mobile & Tablet Drawer Header & Backdrop */
+.lm-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 10, 16, 0.65);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 7;
+}
+.lm-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+.lm-drawer-header strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+.lm-drawer-close {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+.lm-drawer-close:hover {
+  color: var(--color-fg);
+  border-color: #3d5168;
+  background: var(--color-surface);
+}
+
+/* TV & D-pad Keyboard Navigation / High Visibility Focus Rings */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* Responsive Breakpoints: Mobile (<= 640px) */
+@media (max-width: 640px) {
+  .lm-top {
+    padding: 6px 8px 6px;
+    gap: 4px;
+  }
+  .lm-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .lm-brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  .lm-brand strong {
+    font-size: 11px;
+  }
+  .lm-name {
+    width: 100px;
+    font-size: 11px;
+  }
+  .lm-top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+  }
+  .lm-top-end {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+    margin-left: 0;
+  }
   .lm-btn,
   .lm-icon,
   .lm-workspaces button {
-    min-height: 44px;
+    min-height: 40px;
+    font-size: 12px;
+    padding: 0 8px;
+    touch-action: manipulation;
   }
   .lm-icon {
-    width: 44px;
+    width: 40px;
   }
-  .lm-icon.is-text {
-    width: auto;
+  .lm-speed {
+    font-size: 10px;
   }
-  .lm-bar {
-    flex-wrap: wrap;
-  }
-  .lm-top-end {
-    margin-left: 0;
+  .lm-speed input {
+    width: 52px;
   }
   .lm-workspaces {
     width: 100%;
+    padding-bottom: 2px;
+  }
+  .lm-workspaces button {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .lm-bar-tabs {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .lm-message {
+    font-size: 11px;
+    width: 100%;
   }
   .lm-narrow .lm-bottom {
-    height: 168px;
+    height: 190px;
+  }
+  .lm-drawer {
+    width: min(340px, 92vw);
+  }
+  .lm-canvas-controls {
+    bottom: 10px;
+    right: 10px;
+  }
+  .lm-canvas-btn {
+    min-width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .lm-canvas-btn.is-label {
+    min-width: 44px;
+    font-size: 13px;
+  }
+  .lm-tabs button {
+    min-height: 38px;
+    font-size: 13px;
+    padding: 4px 6px;
+  }
+  .lm-pins button {
+    min-height: 38px;
+    padding: 4px 8px;
+  }
+  .lm-menu {
+    left: 8px;
+    right: 8px;
+    width: auto;
   }
 }
+
+/* Tablet (641px - 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .lm-btn,
+  .lm-icon,
+  .lm-workspaces button {
+    min-height: 38px;
+  }
+  .lm-icon {
+    width: 38px;
+  }
+  .lm-narrow .lm-bottom {
+    height: 200px;
+  }
+  .lm-drawer {
+    width: 340px;
+  }
+  .lm-canvas-btn {
+    min-width: 38px;
+    height: 38px;
+  }
+}
+
+/* Mobile & Tablet combined view under 1024px for panel adjustments */
+@media (max-width: 1024px) {
+  .lm-drawer {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+  }
+  .lm-modal .lm-dialog {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* TV / Large Screen (min-width: 1920px or tv media) */
+@media (min-width: 1920px) {
+  :root {
+    font-size: 18px;
+  }
+  .lm-top {
+    padding: 12px 20px;
+    gap: 10px;
+  }
+  .lm-brand {
+    gap: 12px;
+  }
+  .lm-brand strong {
+    font-size: 15px;
+  }
+  .lm-logo {
+    width: 34px;
+    height: 34px;
+  }
+  .lm-name {
+    font-size: 15px;
+    width: 180px;
+  }
+  .lm-btn,
+  .lm-icon,
+  .lm-workspaces button {
+    min-height: 42px;
+    font-size: 15px;
+    padding: 0 14px;
+    border-radius: 8px;
+  }
+  .lm-icon {
+    width: 42px;
+  }
+  .lm-pill {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  .lm-speed {
+    font-size: 13px;
+  }
+  .lm-speed input {
+    width: 100px;
+  }
+  .lm-canvas-btn {
+    min-width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+  .lm-canvas-btn.is-label {
+    font-size: 14px;
+    padding: 0 14px;
+  }
+  .lm-insp,
+  .lm-cpu {
+    padding: 18px 20px 28px;
+  }
+  .lm-lib-scroll {
+    padding: 0 14px 24px;
+  }
+  .lm-part {
+    padding: 10px 12px;
+  }
+  .lm-part span {
+    font-size: 15px;
+  }
+  .lm-part small {
+    font-size: 13px;
+  }
+  .lm-tabs button {
+    min-height: 36px;
+    font-size: 14px;
+  }
+  .lm-debug li button {
+    min-height: 52px;
+    font-size: 14px;
+  }
+}
+
+/* TV Controller / Remote Directional Navigation Focus Accent */
+@media (hover: none) and (pointer: coarse) {
+  /* Enhance touch targets on touch devices */
+  .lm-btn,
+  .lm-icon,
+  .lm-workspaces button {
+    touch-action: manipulation;
+  }
+}
+

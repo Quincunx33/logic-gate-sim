@@ -152,21 +152,65 @@ export function LabShell() {
     );
 
   return (
-    <div className="lm">
-      <TopBar narrow={narrow} onLib={() => setLibOpen((v) => !v)} onInsp={() => setInspOpen((v) => !v)} />
+    <div className="lm" suppressHydrationWarning>
+      <TopBar
+        narrow={narrow}
+        libOpen={libOpen}
+        inspOpen={inspOpen}
+        onLib={() => {
+          setLibOpen((v) => !v);
+          setInspOpen(false);
+        }}
+        onInsp={() => {
+          setInspOpen((v) => !v);
+          setLibOpen(false);
+        }}
+      />
       {narrow ? (
         <div className="lm-narrow">
           <div className="lm-narrow-center">{center}</div>
           <div className="lm-bottom">
             <Bottom />
           </div>
+          {(libOpen || inspOpen) && (
+            <div
+              className="lm-drawer-backdrop"
+              aria-hidden="true"
+              onClick={() => {
+                setLibOpen(false);
+                setInspOpen(false);
+              }}
+            />
+          )}
           {libOpen && (
-            <aside className="lm-drawer">
+            <aside className="lm-drawer" aria-label="Component parts library">
+              <div className="lm-drawer-header">
+                <strong>Parts Library</strong>
+                <button
+                  type="button"
+                  className="lm-drawer-close"
+                  aria-label="Close parts library"
+                  onClick={() => setLibOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
               <Library onPick={() => setLibOpen(false)} />
             </aside>
           )}
           {inspOpen && (
-            <aside className="lm-drawer is-right">
+            <aside className="lm-drawer is-right" aria-label="Inspector panel">
+              <div className="lm-drawer-header">
+                <strong>Inspector</strong>
+                <button
+                  type="button"
+                  className="lm-drawer-close"
+                  aria-label="Close inspector"
+                  onClick={() => setInspOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
               <SidePanel />
             </aside>
           )}
@@ -188,22 +232,22 @@ function Desktop({ workspaceCenter }: { workspaceCenter: ReactNode }) {
   const sideRef = usePanelRef();
   return (
     <div className="lm-desktop">
-      <Group orientation="horizontal" className="lm-group" style={{ height: "100%", width: "100%" }}>
-        <Panel panelRef={libRef} defaultSize="18%" minSize={188} collapsible collapsedSize={0}>
+      <Group id="lm-group-main" orientation="horizontal" className="lm-group" style={{ height: "100%", width: "100%" }}>
+        <Panel id="lm-panel-lib" panelRef={libRef} defaultSize={18} minSize={15} collapsible collapsedSize={0}>
           <Library />
         </Panel>
-        <Separator className="lm-sep" />
-        <Panel minSize={280}>
-          <Group orientation="vertical" className="lm-group" style={{ height: "100%", width: "100%" }}>
-            <Panel minSize={160}>{workspaceCenter}</Panel>
-            <Separator className="lm-sep" />
-            <Panel defaultSize="30%" minSize={110} collapsible collapsedSize={36}>
+        <Separator id="lm-sep-left" className="lm-sep" />
+        <Panel id="lm-panel-center-group" minSize={30}>
+          <Group id="lm-group-center" orientation="vertical" className="lm-group" style={{ height: "100%", width: "100%" }}>
+            <Panel id="lm-panel-workspace" minSize={20}>{workspaceCenter}</Panel>
+            <Separator id="lm-sep-bottom" className="lm-sep" />
+            <Panel id="lm-panel-bottom" defaultSize={30} minSize={15} collapsible collapsedSize={5}>
               <Bottom />
             </Panel>
           </Group>
         </Panel>
-        <Separator className="lm-sep" />
-        <Panel panelRef={sideRef} defaultSize="24%" minSize={220} collapsible collapsedSize={0}>
+        <Separator id="lm-sep-right" className="lm-sep" />
+        <Panel id="lm-panel-side" panelRef={sideRef} defaultSize={24} minSize={15} collapsible collapsedSize={0}>
           <SidePanel />
         </Panel>
       </Group>
@@ -211,7 +255,19 @@ function Desktop({ workspaceCenter }: { workspaceCenter: ReactNode }) {
   );
 }
 
-function TopBar({ narrow, onLib, onInsp }: { narrow: boolean; onLib: () => void; onInsp: () => void }) {
+function TopBar({
+  narrow,
+  libOpen,
+  inspOpen,
+  onLib,
+  onInsp,
+}: {
+  narrow: boolean;
+  libOpen?: boolean;
+  inspOpen?: boolean;
+  onLib: () => void;
+  onInsp: () => void;
+}) {
   const name = useLab((s) => s.name);
   const running = useLab((s) => s.running);
   const speed = useLab((s) => s.speed);
@@ -242,7 +298,12 @@ function TopBar({ narrow, onLib, onInsp }: { narrow: boolean; onLib: () => void;
         </div>
         <div className="lm-top-actions">
           {narrow && (
-            <button type="button" className="lm-btn" onClick={onLib}>
+            <button
+              type="button"
+              className={"lm-btn" + (libOpen ? " is-on" : "")}
+              onClick={onLib}
+              aria-expanded={!!libOpen}
+            >
               Parts
             </button>
           )}
@@ -282,7 +343,12 @@ function TopBar({ narrow, onLib, onInsp }: { narrow: boolean; onLib: () => void;
         </div>
         <div className="lm-top-end">
           {narrow && (
-            <button type="button" className="lm-btn" onClick={onInsp}>
+            <button
+              type="button"
+              className={"lm-btn" + (inspOpen ? " is-on" : "")}
+              onClick={onInsp}
+              aria-expanded={!!inspOpen}
+            >
               Inspect
             </button>
           )}
@@ -363,13 +429,18 @@ function TopBar({ narrow, onLib, onInsp }: { narrow: boolean; onLib: () => void;
 }
 
 function HistoryList() {
-  const items = useLab.getState().history();
+  const [items, setItems] = useState<{ at: number; name: string }[]>([]);
+
+  useEffect(() => {
+    setItems(useLab.getState().history());
+  }, []);
+
   if (items.length === 0) return <p className="lm-menu-note">No saved versions yet.</p>;
   return (
     <div className="lm-history">
       {items.map((item, i) => (
         <button key={item.at} type="button" onClick={() => useLab.getState().restoreHistory(i)}>
-          {item.name} · {new Date(item.at).toLocaleString()}
+          {item.name} · {new Date(item.at).toISOString().slice(0, 16).replace("T", " ")}
         </button>
       ))}
     </div>

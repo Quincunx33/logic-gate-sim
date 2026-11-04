@@ -196,14 +196,16 @@ export function Schematic() {
     };
     drawRef.current = draw;
 
-    const hitPin = (wx: number, wy: number) => {
+    const hitPin = (wx: number, wy: number, isTouch = false) => {
       let best: { c: string; p: string; d: number } | null = null;
+      // Generous threshold for touchscreens (mobile/tablet/TV touch)
+      const threshold = (isTouch ? 22 : 12) / cam.current.z;
       for (const comp of useLab.getState().circuit().components) {
         for (const p of getDef(comp.type).pins) {
           const pt = pinWorld(comp, p.id);
           if (!pt) continue;
           const d = Math.hypot(pt.x - wx, pt.y - wy);
-          if (d < 10 / cam.current.z && (!best || d < best.d)) best = { c: comp.id, p: p.id, d };
+          if (d < threshold && (!best || d < best.d)) best = { c: comp.id, p: p.id, d };
         }
       }
       return best;
@@ -249,7 +251,8 @@ export function Schematic() {
         draw();
         return;
       }
-      const pin = hitPin(wpt.x, wpt.y);
+      const isTouch = e.pointerType === "touch";
+      const pin = hitPin(wpt.x, wpt.y, isTouch);
       if (pin && e.shiftKey === false) {
         drag = { kind: "wire", c: pin.c, p: pin.p, x: wpt.x, y: wpt.y };
         return;
@@ -339,7 +342,7 @@ export function Schematic() {
       const store = useLab.getState();
       if (drag?.kind === "button") store.setButton(drag.id, false);
       if (drag?.kind === "wire") {
-        const pin = hitPin(wpt.x, wpt.y);
+        const pin = hitPin(wpt.x, wpt.y, e.pointerType === "touch");
         if (pin && !(pin.c === drag.c && pin.p === drag.p)) store.addWire({ c: drag.c, p: drag.p }, pin);
       }
       if (drag?.kind === "marquee") {
@@ -473,9 +476,53 @@ export function Schematic() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
+  const zoomBy = (factor: number) => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const r = wrap.getBoundingClientRect();
+    const mx = r.width / 2;
+    const my = r.height / 2;
+    const wx = (mx - cam.current.x) / cam.current.z;
+    const wy = (my - cam.current.y) / cam.current.z;
+    const next = Math.max(0.3, Math.min(2.6, cam.current.z * factor));
+    cam.current.z = next;
+    cam.current.x = mx - wx * next;
+    cam.current.y = my - wy * next;
+    drawRef.current();
+  };
+
   return (
-    <div ref={wrapRef} className={"lm-canvas" + (placeType ? " is-place" : "")}>
-      <canvas ref={canvasRef} />
+    <div ref={wrapRef} className={"lm-canvas" + (placeType ? " is-place" : "")} suppressHydrationWarning>
+      <canvas ref={canvasRef} suppressHydrationWarning />
+      <div className="lm-canvas-controls" aria-label="Canvas zoom and pan controls">
+        <button
+          type="button"
+          className="lm-canvas-btn"
+          title="Zoom in"
+          aria-label="Zoom in"
+          onClick={() => zoomBy(1.2)}
+        >
+          +
+        </button>
+        <button
+          type="button"
+          className="lm-canvas-btn"
+          title="Zoom out"
+          aria-label="Zoom out"
+          onClick={() => zoomBy(0.83)}
+        >
+          −
+        </button>
+        <button
+          type="button"
+          className="lm-canvas-btn is-label"
+          title="Fit schematic to screen"
+          aria-label="Fit schematic to screen"
+          onClick={() => useLab.getState().fitView()}
+        >
+          Fit
+        </button>
+      </div>
     </div>
   );
 }
